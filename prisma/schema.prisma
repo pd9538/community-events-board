@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum EventCategory {
+  MUSIC
+  WORKSHOP
+  FOOD
+  SPORTS
+  KIDS
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+
+  favouriteCategories CategoryPreference[]
+  reminders           Reminder[]
+  cardDesigns         CardDesign[]
+}
+
+model Event {
+  id          Int           @id @default(autoincrement())
+  title       String
+  category    EventCategory
+  city        String
+  dateTime    DateTime
+  price       Decimal       @db.Decimal(10, 2)
+  description String
+  imageUrl    String
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  reminders   Reminder[]
+  cardDesigns CardDesign[]
+
+  @@index([isActive, dateTime])
+  @@index([category, city, dateTime])
+  @@index([city, dateTime])
+}
+
+model CategoryPreference {
+  id       Int          @id @default(autoincrement())
+  userId   Int
+  category EventCategory
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+  @@index([userId])
+}
+
+model Reminder {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  eventId   Int
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+}
+
+model CardDesign {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  eventId   Int
+  theme     String
+  stickers  Json
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
