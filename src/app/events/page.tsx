@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
 
 type EventCategory = "MUSIC" | "WORKSHOP" | "FOOD" | "SPORTS" | "KIDS";
 
@@ -60,12 +61,10 @@ function formatDate(dateTime: string) {
 }
 
 function getCategoryLabel(category: EventCategory) {
-  return (
-    categories.find((item) => item.value === category)?.label ?? category
-  );
+  return categories.find((item) => item.value === category)?.label ?? category;
 }
 
-export default function EventsPage() {
+function EventsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -82,8 +81,7 @@ export default function EventsPage() {
   const urlCategory = searchParams.get("category");
 
   const category: EventCategory | "" =
-    urlCategory &&
-    categories.some((item) => item.value === urlCategory)
+    urlCategory && categories.some((item) => item.value === urlCategory)
       ? (urlCategory as EventCategory)
       : "";
 
@@ -131,9 +129,7 @@ export default function EventsPage() {
         params.set("page", String(page));
         params.set("limit", "6");
 
-        const response = await fetch(
-          `/api/events?${params.toString()}`
-        );
+        const response = await fetch(`/api/events?${params.toString()}`);
 
         const data: EventsResponse = await response.json();
 
@@ -153,6 +149,8 @@ export default function EventsPage() {
         setLoading(false);
       }
     }
+
+
 
     fetchEvents();
   }, [category, city, search, page]);
@@ -235,9 +233,7 @@ export default function EventsPage() {
       params.set("page", String(page));
       params.set("limit", "6");
 
-      const response = await fetch(
-        `/api/events?${params.toString()}`
-      );
+      const response = await fetch(`/api/events?${params.toString()}`);
 
       const data: EventsResponse = await response.json();
 
@@ -402,9 +398,7 @@ export default function EventsPage() {
               Something went wrong
             </h2>
 
-            <p className="mt-2 text-sm text-red-600">
-              {error}
-            </p>
+            <p className="mt-2 text-sm text-red-600">{error}</p>
 
             <button
               onClick={retryFetch}
@@ -483,9 +477,7 @@ export default function EventsPage() {
 
                     <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
                       <div>
-                        <p className="text-xs text-slate-500">
-                          Entry price
-                        </p>
+                        <p className="text-xs text-slate-500">Entry price</p>
 
                         <p className="text-lg font-bold text-indigo-600">
                           {formatPrice(event.price)}
@@ -509,9 +501,7 @@ export default function EventsPage() {
               <div className="mt-10 flex items-center justify-center gap-3">
                 <button
                   disabled={page === 1}
-                  onClick={() =>
-                    setPage((current) => current - 1)
-                  }
+                  onClick={() => setPage((current) => current - 1)}
                   className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Previous
@@ -523,9 +513,7 @@ export default function EventsPage() {
 
                 <button
                   disabled={page === totalPages}
-                  onClick={() =>
-                    setPage((current) => current + 1)
-                  }
+                  onClick={() => setPage((current) => current + 1)}
                   className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Next
@@ -538,3 +526,10 @@ export default function EventsPage() {
     </main>
   );
 }
+    export default function EventsPage() {
+      return (
+        <Suspense fallback={<div className="p-6">Loading events...</div>}>
+          <EventsPageContent />
+        </Suspense>
+      );
+    }
