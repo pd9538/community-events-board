@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Community Events Board
 
-## Getting Started
+A full-stack community events platform built with Next.js, TypeScript, PostgreSQL and Prisma.
 
-First, run the development server:
+Users can discover upcoming community events, filter and search events, save favourite categories, view a personalized feed, set reminders, and design personalized event cards.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Admins can create and manage events and activate/deactivate them.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Frontend
+- Next.js
+- TypeScript
+- React
+- Tailwind CSS
+- Next.js App Router
 
-## Learn More
+### Backend
+- Next.js API Routes
+- JWT Authentication
+- bcryptjs for password hashing
 
-To learn more about Next.js, take a look at the following resources:
+### Database
+- PostgreSQL
+- Prisma ORM
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Development
+- Node.js
+- npm
+- Git / GitHub
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Visitor / User Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Browse upcoming active events
+- Search events by title, description or city
+- Filter events by category and city
+- Combine search and filters
+- Pagination
+- Event details page
+- User signup and login
+- JWT-based authentication
+- Favourite category selection
+- Personalized "My Feed"
+- Remind Me functionality
+- Persistent reminders
+- Event Card Designer
+- Three card background themes
+- Five available stickers
+- Maximum three stickers per card
+- Saved card design persists after refresh
+- Responsive design for desktop and mobile
+- Loading, empty and error states
+- Indian Rupee price formatting
+- Friendly date/time formatting
+
+### Admin Features
+
+- Admin authentication
+- View all events
+- Add new events
+- Edit existing events
+- Activate/deactivate events
+- No delete operation is provided for events
+
+---
+
+## Project Structure
+
+```text
+community-events-board/
+│
+├── prisma/
+│   ├── migrations/
+│   ├── schema.prisma
+│   └── seed.ts
+│
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── admin/
+│   │   │   ├── auth/
+│   │   │   ├── card-design/
+│   │   │   ├── events/
+│   │   │   ├── favourites/
+│   │   │   ├── feed/
+│   │   │   └── reminders/
+│   │   │
+│   │   ├── admin/
+│   │   ├── events/
+│   │   ├── favourites/
+│   │   ├── feed/
+│   │   ├── login/
+│   │   ├── signup/
+│   │   └── page.tsx
+│   │
+│   ├── generated/
+│   │   └── prisma/
+│   │
+│   └── lib/
+│       ├── auth.ts
+│       ├── prisma.ts
+│       └── require-auth.ts
+│
+├── prisma.config.ts
+├── package.json
+├── package-lock.json
+├── .gitignore
+└── README.md
