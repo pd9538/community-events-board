@@ -1,8 +1,7 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type EventCategory = "MUSIC" | "WORKSHOP" | "FOOD" | "SPORTS" | "KIDS";
 
@@ -66,24 +65,13 @@ function getCategoryLabel(category: EventCategory) {
 
 function EventsPageContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
 
   const [events, setEvents] = useState<EventItem[]>([]);
 
-  /*
-   * Category comes directly from the URL.
-   *
-   * Example:
-   * /events?category=MUSIC
-   *
-   * category will be "MUSIC".
-   */
-  const urlCategory = searchParams.get("category");
+  
 
-  const category: EventCategory | "" =
-    urlCategory && categories.some((item) => item.value === urlCategory)
-      ? (urlCategory as EventCategory)
-      : "";
+  const [category, setCategory] = useState<EventCategory | "">("");
 
   const [city, setCity] = useState("");
   const [search, setSearch] = useState("");
@@ -100,9 +88,17 @@ function EventsPageContent() {
    * always start from page 1.
    */
   useEffect(() => {
-    setPage(1);
-  }, [urlCategory]);
+    const params = new URLSearchParams(window.location.search);
+    const urlCategory = params.get("category");
 
+    if (urlCategory && categories.some((item) => item.value === urlCategory)) {
+      setCategory(urlCategory as EventCategory);
+    } else {
+      setCategory("");
+    }
+
+    setPage(1);
+  }, []);
   /*
    * Fetch events whenever filters/page change.
    */
@@ -150,8 +146,6 @@ function EventsPageContent() {
       }
     }
 
-
-
     fetchEvents();
   }, [category, city, search, page]);
 
@@ -166,20 +160,16 @@ function EventsPageContent() {
    * FOOD  -> /events?category=FOOD
    */
   function handleCategoryChange(value: string) {
-    const params = new URLSearchParams(searchParams.toString());
+    const selectedCategory = value as EventCategory | "";
 
-    if (value) {
-      params.set("category", value);
-    } else {
-      params.delete("category");
-    }
-
-    // Category change should always start from page 1.
+    setCategory(selectedCategory);
     setPage(1);
 
-    const query = params.toString();
-
-    router.push(query ? `/events?${query}` : "/events");
+    if (selectedCategory) {
+      router.push(`/events?category=${selectedCategory}`);
+    } else {
+      router.push("/events");
+    }
   }
 
   function handleCityChange(value: string) {
@@ -193,19 +183,12 @@ function EventsPageContent() {
   }
 
   function clearFilters() {
+    setCategory("");
     setCity("");
     setSearch("");
     setPage(1);
 
-    /*
-     * Remove category from URL as well.
-     */
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("category");
-
-    const query = params.toString();
-
-    router.push(query ? `/events?${query}` : "/events");
+    router.push("/events");
   }
 
   /*
@@ -526,10 +509,6 @@ function EventsPageContent() {
     </main>
   );
 }
-    export default function EventsPage() {
-      return (
-        <Suspense fallback={<div className="p-6">Loading events...</div>}>
-          <EventsPageContent />
-        </Suspense>
-      );
-    }
+export default function EventsPage() {
+  return <EventsPageContent />;
+}
